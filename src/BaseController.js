@@ -44,7 +44,7 @@ module.exports = class BaseController {
     created(createdResource, url) {
         this._responseData.statusCode = 201;
         this._responseData.headers["Location"] = url;
-        
+        return createdResource;
     }
 
     noContent() {
