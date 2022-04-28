@@ -2,6 +2,7 @@ const Framework = require('./Framework');
 const Router = require('./Router');
 const BaseController = require('./BaseController');
 const fs = require('fs');
+const CustomError = require('./errors');
 
 function createApplication(routePath="routes/", controllersPath="controllers/") {
     fs.readdirSync(routePath).forEach((file) => {
@@ -14,3 +15,4 @@ function createApplication(routePath="routes/", controllersPath="controllers/") 
 exports = module.exports = createApplication;
 exports.Router = Router;
 exports.BaseController = BaseController;
+exports.CustomError = CustomError;

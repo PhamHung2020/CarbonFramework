@@ -27,11 +27,12 @@ module.exports = class BaseController {
                 }
             }
             catch (err) {
-                this._responseData.statusCode = 500;
-                this._responseData.errors = {
-                    message: err.message,
-                    stack: err.stack,
-                };
+                // this._responseData.statusCode = 500;
+                // this._responseData.errors = {
+                //     message: err.message,
+                //     stack: err.stack,
+                // };
+                throw err;
             }
         }
     }

@@ -3,7 +3,7 @@ const fs = require('fs');
 //const nodeStatic = require('node-static');
 const BodyParser = require('./middlewares/BodyParser');
 const QueryParser = require('./middlewares/QueryParser');
-const Router = require('./Router');
+const ErrorHandler = require('./ErrorHandler');
 
 class Framework {
     constructor(router, controllersPath="controllers/") {
@@ -16,7 +16,7 @@ class Framework {
         this._controllers = [];
         this._middlewares = [BodyParser, QueryParser];
         //this._staticRoutes = [];
-        this._errorHandlers = [];
+        //this._errorHandlers = [];
 
         // helpers
         this.logger = {
@@ -41,7 +41,8 @@ class Framework {
                 // then determine which controller (and local middlewares) to use
                 this._processMiddlewares(req, res, this._middlewares, this._resolveResponse.bind(this));
             } catch (err) {
-                this._processMiddlewares(req, res, this._errorHandlers, this._defaultErrorHandler, err);
+                // this._processMiddlewares(req, res, this._errorHandlers, this._defaultErrorHandler, err);
+                ErrorHandler(req, res, null, err);
             }
         });
 
@@ -77,10 +78,11 @@ class Framework {
                 if (!middleware) {
                     try {
                         endFunc(req, res, err);
-                        return;
                     } catch (err) {
+                        console.log("Error 3");
                         throw err;
                     }
+                    return;
                 }
                 try {
                     middleware(req, res, next, err);
@@ -89,7 +91,12 @@ class Framework {
                 }
             }
             // start
-            next();
+            try {
+                next();
+            } catch (err) {
+                console.log("Error 4");
+                throw err;
+            }
         }
         handleMiddlewares();
     }
@@ -113,6 +120,7 @@ class Framework {
                 // then run controller
                 this._processMiddlewares(req, res, resolveData.middlewares, this._evokeController.bind(this));
             } catch (err) {
+                console.log("Error 2");
                 throw err;
             }
         }
@@ -125,8 +133,12 @@ class Framework {
         const resolveData = req.resolveData;
         const controller = new this._controllers[resolveData.controller]();
         req.controller.data.params = {...req.controller.data.params, ...resolveData.params};
-        
-        await controller.run(resolveData.action, req.controller.data); // data: params, query, body
+        try {
+            await controller.run(resolveData.action, req.controller.data); // data: params, query, body
+        } catch (err) {
+            console.log("Error 1");
+            throw err;
+        }
         switch (controller._responseData.statusCode) {
             case 301:
                 res.writeHead(301, controller._responseData.headers);

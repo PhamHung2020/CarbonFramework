@@ -1,4 +1,5 @@
 const BaseController = require('../src').BaseController;
+const CustomError = require('../src').CustomError;
 const pool = require('../db');
 
 class PostsController extends BaseController {
@@ -16,9 +17,10 @@ class PostsController extends BaseController {
         console.log('PostController#show called from the controller');
         const [rows] = await pool.query("SELECT * FROM POST WHERE ID = ?", this.params.id);
         if (rows.length == 0) {
-            return this.badRequest({
-                msg: "Post not found"
-            });
+            // return this.badRequest({
+            //     msg: "Post not found"
+            // });
+            throw new CustomError.NotFoundError("Post not found");
         }
         return this.ok({
             msg: 'PostController#show called from the controller',
