@@ -80,14 +80,14 @@ class Framework {
                         endFunc(req, res, err);
                     } catch (err) {
                         console.log("Error 3");
-                        throw err;
+                        ErrorHandler(req, res, null, err);
                     }
                     return;
                 }
                 try {
                     middleware(req, res, next, err);
                 } catch (err) {
-                    throw err;
+                    ErrorHandler(req, res, null, err);
                 }
             }
             // start
@@ -95,7 +95,7 @@ class Framework {
                 next();
             } catch (err) {
                 console.log("Error 4");
-                throw err;
+                ErrorHandler(req, res, null, err);
             }
         }
         handleMiddlewares();
@@ -137,7 +137,8 @@ class Framework {
             await controller.run(resolveData.action, req.controller.data); // data: params, query, body
         } catch (err) {
             console.log("Error 1");
-            throw err;
+            ErrorHandler(req, res, null, err);
+            return;
         }
         switch (controller._responseData.statusCode) {
             case 301:
